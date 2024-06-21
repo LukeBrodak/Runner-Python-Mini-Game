@@ -3,7 +3,7 @@ from sys import exit
 
 def display_score():
     current_time = (pygame.time.get_ticks() - start_time) / 1000
-    score_surf = test_font.render(f'Score: {current_time:.1f}', False, '#EE00FF')
+    score_surf = test_font.render(f'Score: {current_time:.1f}', False, '#EE00FF') 
     score_rect = score_surf.get_rect(center = (525, 50))
     screen.blit(score_surf, score_rect)
 
@@ -26,7 +26,7 @@ ground_surface = pygame.image.load('Graphics\purple_floor2.png').convert()
 snail_surf = pygame.image.load('Graphics\slimeWalk1.png').convert_alpha()
 snail_rect = snail_surf.get_rect( bottomright = (600,300))
 
-player_surf = pygame.image.load('Graphics\Player\player_walk_1.png').convert_alpha()
+player_surf = pygame.image.load('Graphics/vapey.png').convert_alpha()
 player_rect = player_surf.get_rect(midbottom = (80,300))
 player_gravity = 0
 
@@ -53,12 +53,12 @@ while True:
     if game_active:        
         screen.blit(sky_surface,(0,0))
         screen.blit(ground_surface,(0,300))
-        # pygame.draw.rect(screen,'#5D0CE9',score_rect)
+        # pygame.draw.rect(screen,'#5D0CE9',score_rect)  
         # pygame.draw.rect(screen,'#5D0CE9',score_rect,20)
         # screen.blit(score_surf,score_rect)
         display_score()
 
-        snail_rect.x -= 4
+        snail_rect.x -= 5
         if snail_rect.right <= 0: snail_rect.left = 800
         screen.blit(snail_surf,snail_rect)
 
