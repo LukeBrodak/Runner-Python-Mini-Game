@@ -1,7 +1,7 @@
 import pygame
 from sys import exit
 from random import randint, choice
-
+import math
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
@@ -55,6 +55,8 @@ class Obstacle(pygame.sprite.Sprite):
             fly_2 = pygame.image.load('Graphics/blackhole2.png').convert_alpha()
             self.frames = [fly_1,fly_2]
             y_pos = 190
+            self.y_offset = 0
+            self.time = 0
 
         else:
             snail_1 = pygame.image.load('Graphics\slimeWalk1.png').convert_alpha()
@@ -74,6 +76,10 @@ class Obstacle(pygame.sprite.Sprite):
     def update(self):
             self.animation_state()
             self.rect.x -= 6
+            if 'fly' in self.frames:  # Apply sine wave motion for flies
+                    self.time += 0.1  # Increase time component
+                    self.y_offset = 50 * math.sin(self.time)  # Calculate sine wave offset
+                    self.rect.y = self.y_pos_base + self.y_offset  # Adjust y-coordinate
             self.destroy()
 
     def destroy(self):
@@ -129,7 +135,7 @@ def player_animation():
 
 pygame.init()
 screen = pygame.display.set_mode((800,400))
-pygame.display.set_caption('Cosmic Cartwheels')
+pygame.display.set_caption('Planetary Devestation')
 clock = pygame.time.Clock()   
 test_font = pygame.font.Font('Graphics\Font\Pixeltype.ttf', 50)
 game_active = False
@@ -190,8 +196,8 @@ game_message = test_font.render('Press SPACE to bounce again!', False, '#FF1493'
 game_message_rect = game_message.get_rect(center = (400, 350))
 
 #Timer
-obstacle_timer = pygame.USEREVENT + 1
-pygame.time.set_timer(obstacle_timer, 1500)
+obstacle_timer = pygame.USEREVENT + 10
+pygame.time.set_timer(obstacle_timer, 1800)
 
 snail_animation_timer = pygame.USEREVENT + 2
 pygame.time.set_timer(snail_animation_timer,500)
