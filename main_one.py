@@ -213,8 +213,8 @@ while True:
         player.sprite.gravity = 0
 
         score_message = test_font.render(f'Your score: {score}', False, '#FFD700')
-        score_message_rect = score_message.get_rect(center=(400, 350))
-        screen.blit(game_name, (250, 50))
+        score_message_rect = score_message.get_rect(center=(400, 375))
+        screen.blit(game_name, (78, 50))
 
         if score == 0:
             screen.blit(game_message, game_message_rect)
