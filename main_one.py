@@ -50,9 +50,13 @@ class Obstacle(pygame.sprite.Sprite):
         super().__init__()
         
         if type == 'fly':
-            fly_1 = pygame.image.load('Graphics/blackhole.png').convert_alpha()
-            fly_2 = pygame.image.load('Graphics/blackhole2.png').convert_alpha()
-            self.frames = [fly_1, fly_2]
+            fly_1 = pygame.image.load('Graphics/spacey1.png').convert_alpha()
+            fly_2 = pygame.image.load('Graphics/spacey2.png').convert_alpha()
+            fly_3 = pygame.image.load('Graphics/spacey3.png').convert_alpha()
+            fly_4 = pygame.image.load('Graphics/spacey4.png').convert_alpha()  
+            fly_5 = pygame.image.load('Graphics/spacey5.png').convert_alpha()
+            fly_6 = pygame.image.load('Graphics/spacey6.png').convert_alpha()
+            self.frames = [fly_1, fly_2,fly_3,fly_4,fly_5,fly_6]
             self.y_pos_base = 190
             self.y_offset = 0
             self.time = 0
@@ -88,10 +92,22 @@ class Obstacle(pygame.sprite.Sprite):
         if self.rect.x <= -100:
             self.kill()
 
+class Projectile(pygame.sprite.Sprite):
+    def __init__(self, pos):
+        super().__init__()
+        self.image = pygame.image.load('Graphics/projectile.png').convert_alpha()
+        self.rect = self.image.get_rect(center=pos)
+        self.speed = 10
+
+    def update(self):
+        self.rect.x += self.speed
+        if self.rect.right > 800:
+            self.kill()
+
 def display_score():
     current_time = (pygame.time.get_ticks() - start_time) / 1000
     score_surf = test_font.render(f'Score: {current_time:.1f}', False, '#EE00FF')
-    score_rect = score_surf.get_rect(center=(525, 50))
+    score_rect = score_surf.get_rect( center=(525, 50))
     screen.blit(score_surf, score_rect)
     return current_time
 
@@ -102,11 +118,24 @@ def collision_sprite():
     else:
         return True
 
+def collision_projectiles():
+    for projectile in projectile_group:
+        obstacle_hit_list = pygame.sprite.spritecollide(projectile, obstacle_group, True)
+        for obstacle in obstacle_hit_list:
+            projectile.kill()  # Destroy the projectile if it hits an obstacle
+
+def create_blinking_surface(original_surface, blink_speed=0.005):
+    alpha = int(math.sin(pygame.time.get_ticks() * blink_speed) * 127 + 128)
+    blink_surface = original_surface.copy()
+    blink_surface.set_alpha(alpha)
+    return blink_surface
+
 pygame.init()
 screen = pygame.display.set_mode((800, 400))
-pygame.display.set_caption('Cosmic Cartwheels')
+pygame.display.set_caption('Galactic Getaway')
 clock = pygame.time.Clock()
-test_font = pygame.font.Font('Graphics/Font/Pixeltype.ttf', 50)
+test_font = pygame.font.Font('Graphics/Font/SquareShiny.ttf', 45)
+tiny_font = pygame.font.Font('Graphics/Font/SquareShiny.ttf', 25)
 game_active = False
 start_time = 0
 score = 0
@@ -119,19 +148,22 @@ player = pygame.sprite.GroupSingle()
 player.add(Player())
 
 obstacle_group = pygame.sprite.Group()
+projectile_group = pygame.sprite.Group()
 
-sky_surface = pygame.image.load('Graphics/sky.png').convert()
+menu_surface = pygame.image.load('Graphics/anihilated2.png')
+sky_surface = pygame.image.load('Graphics/planets.png').convert()
 ground_surface = pygame.image.load('Graphics/purple_floor2.png').convert()
 
 player_stand = pygame.image.load('Graphics/globe1.png').convert_alpha()
 player_stand = pygame.transform.rotozoom(player_stand, 0, 2.5)
 player_stand_rect = player_stand.get_rect(center=(400, 200))
 
-game_name = test_font.render('Planetary Devastation', False, '#FFD700')
-game_name_rect = game_name.get_rect(center=(400, 200))
+game_name = test_font.render('Galactic Getaway!', False, '#FF4500','#000000' )
+game_name_rect = game_name.get_rect(center=(50,50))
 
-game_message = test_font.render('Press SPACE to bounce again!', False, '#FF1493')
-game_message_rect = game_message.get_rect(center=(400, 350))
+game_message = tiny_font.render('Press SPACE', False,'#FF4500')
+game_message_rect = game_message.get_rect(center=(400, 390))
+
 
 # Timer
 obstacle_timer = pygame.USEREVENT + 1
@@ -141,7 +173,8 @@ snail_animation_timer = pygame.USEREVENT + 2
 pygame.time.set_timer(snail_animation_timer, 500)
 
 fly_animation_timer = pygame.USEREVENT + 3
-pygame.time.set_timer(fly_animation_timer, 200)
+pygame.time.set_timer(fly_animation_timer, 100)
+
 
 snail_frame_index = 0
 fly_frame_index = 0
@@ -152,8 +185,12 @@ snail_frames = [
 ]
 
 fly_frames = [
-    pygame.image.load('Graphics/blackhole.png').convert_alpha(),
-    pygame.image.load('Graphics/blackhole2.png').convert_alpha()
+    pygame.image.load('Graphics/spacey1.png').convert_alpha(),
+    pygame.image.load('Graphics/spacey2.png').convert_alpha(),
+    pygame.image.load('Graphics/spacey3.png').convert_alpha(),
+    pygame.image.load('Graphics/spacey4.png').convert_alpha() ,   
+    pygame.image.load('Graphics/spacey5.png').convert_alpha(),
+    pygame.image.load('Graphics/spacey6.png').convert_alpha(),
 ]
 
 while True:
@@ -170,6 +207,9 @@ while True:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE and player.sprite.rect.bottom >= 300:
                     player.sprite.gravity = -20
+                elif event.key == pygame.K_f:
+                    projectile_group.add(Projectile(player.sprite.rect.midtop))
+
         else:
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                 game_active = True
@@ -203,12 +243,17 @@ while True:
         obstacle_group.draw(screen)
         obstacle_group.update()
 
+        projectile_group.draw(screen)
+        projectile_group.update()
+
+        collision_projectiles()
+
         game_active = collision_sprite()
 
     else:
-        screen.fill('#722BED')
-        screen.blit(player_stand, player_stand_rect)
+        screen.blit(menu_surface,(0,0))
         obstacle_group.empty()
+        projectile_group.empty()
         player.sprite.rect.midbottom = (80, 300)
         player.sprite.gravity = 0
 
@@ -217,9 +262,15 @@ while True:
         screen.blit(game_name, (78, 50))
 
         if score == 0:
-            screen.blit(game_message, game_message_rect)
+            blinking_game_message = create_blinking_surface(game_message)
+            screen.blit(blinking_game_message, game_message_rect)
         else:
-            screen.blit(score_message, score_message_rect)
+            score_message = test_font.render(f'Your score: {score:.1f}', False, '#FFD700')
+            score_message_rect = score_message.get_rect(center=(400, 365))
+            blinking_score_message = create_blinking_surface(score_message)
+            screen.blit(blinking_score_message, score_message_rect)
+            blinking_game_message = create_blinking_surface(game_message)
+            screen.blit(blinking_game_message, game_message_rect)
 
     pygame.display.update()
     clock.tick(60)
