@@ -62,8 +62,8 @@ class Obstacle(pygame.sprite.Sprite):
             self.time = 0
 
         else:
-            snail_1 = pygame.image.load('Graphics/slimeWalk1.png').convert_alpha()
-            snail_2 = pygame.image.load('Graphics/slimeWalk2.png').convert_alpha()
+            snail_1 = pygame.image.load('Graphics/blackhole.png').convert_alpha()
+            snail_2 = pygame.image.load('Graphics/blackhole2.png').convert_alpha()
             self.frames = [snail_1, snail_2]
             self.y_pos_base = 300
 
@@ -139,7 +139,7 @@ tiny_font = pygame.font.Font('Graphics/Font/SquareShiny.ttf', 25)
 game_active = False
 start_time = 0
 score = 0
-bg_music = pygame.mixer.Sound('audio/music.wav')
+bg_music = pygame.mixer.Sound('audio/music.mp3')
 bg_music.set_volume(.15)
 bg_music.play(loops=-1)
 
@@ -180,8 +180,8 @@ snail_frame_index = 0
 fly_frame_index = 0
 
 snail_frames = [
-    pygame.image.load('Graphics/slimeWalk1.png').convert_alpha(),
-    pygame.image.load('Graphics/slimeWalk2.png').convert_alpha()
+    pygame.image.load('Graphics/blackhole.png').convert_alpha(),
+    pygame.image.load('Graphics/blackhole2.png').convert_alpha()
 ]
 
 fly_frames = [
